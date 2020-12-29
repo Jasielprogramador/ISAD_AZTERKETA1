@@ -3,6 +3,7 @@ package ehu.isad.controller;
 import com.google.gson.Gson;
 import ehu.isad.Main;
 import ehu.isad.model.Txanpona;
+import ehu.isad.model.TxanponaDB;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
@@ -23,9 +24,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.sql.Date;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -41,25 +43,25 @@ public class HasieraKud implements Initializable {
     private ComboBox<String> cmbCombo;
 
     @FXML
-    private TableView<Txanpona> tbvTaula;
+    private TableView<TxanponaDB> tbvTaula;
 
     @FXML
-    private TableColumn<Txanpona, Integer> tvID;
+    private TableColumn<TxanponaDB, Integer> tvID;
 
     @FXML
-    private TableColumn<Txanpona, String> tvTxanpon;
+    private TableColumn<TxanponaDB, String> tvTxanpon;
 
     @FXML
-    private TableColumn<Txanpona, DateTimeStringConverter> tvNoiz;
+    private TableColumn<TxanponaDB, DateTimeStringConverter> tvNoiz;
 
     @FXML
-    private TableColumn<Txanpona, Float> tvZenbat;
+    private TableColumn<TxanponaDB, Float> tvZenbat;
 
     @FXML
-    private TableColumn<Txanpona, Float> tvBolumena;
+    private TableColumn<TxanponaDB, Float> tvBolumena;
 
     @FXML
-    private TableColumn<Txanpona, Image> tvPortaera;
+    private TableColumn<TxanponaDB, Image> tvPortaera;
 
     private Main mainApp;
 
@@ -71,21 +73,23 @@ public class HasieraKud implements Initializable {
     public void onClick(ActionEvent event) throws IOException {
         Button btn = (Button) event.getSource();
         if (btn.equals(this.btnSartu)) {
-            List<Txanpona> emaitza = DBHasiera.getInstance().datuBaseaLortu();
+            List<TxanponaDB> emaitza = DBHasiera.getInstance().datuBaseaLortu();
             Txanpona txanpona = this.readFromUrl(this.cmbCombo.getValue());
-            emaitza.add(txanpona);
-            ObservableList<Txanpona> a = FXCollections.observableArrayList(emaitza);
+            String data = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            TxanponaDB txanponaDB = new TxanponaDB(txanpona.getTrade_id(),txanpona.getPrice(),txanpona.getVolume(),cmbCombo.getValue(),data);
+            emaitza.add(txanponaDB);
+            ObservableList<TxanponaDB> a = FXCollections.observableArrayList(emaitza);
             tbvTaula.setItems(a);
 
-            tvID.setCellValueFactory(new PropertyValueFactory<>("id"));
+            tvID.setCellValueFactory(new PropertyValueFactory<>("trade_id"));
             tvNoiz.setCellValueFactory(new PropertyValueFactory<>("data"));
             tvTxanpon.setCellValueFactory(new PropertyValueFactory<>("mota"));
-            tvBolumena.setCellValueFactory(new PropertyValueFactory<>("bolumena"));
-            tvZenbat.setCellValueFactory(new PropertyValueFactory<>("balioa"));
+            tvBolumena.setCellValueFactory(new PropertyValueFactory<>("volume"));
+            tvZenbat.setCellValueFactory(new PropertyValueFactory<>("price"));
         }
 
         else if (btn.equals(this.btnGorde)) {
-            List<Txanpona> datuak = this.tvTaulakoDatuakLortu();
+            List<TxanponaDB> datuak = this.tvTaulakoDatuakLortu();
             DBHasiera.getInstance().datuBaseaEzabatu();
             DBHasiera.getInstance().datuBaseaGorde(datuak);
         }
@@ -114,9 +118,9 @@ public class HasieraKud implements Initializable {
         return txanpon;
     }
 
-    private List<Txanpona> tvTaulakoDatuakLortu(){
+    private List<TxanponaDB> tvTaulakoDatuakLortu(){
 
-        List<Txanpona> e = new ArrayList<>();
+        List<TxanponaDB> e = new ArrayList<>();
 
         for(int i = 0;i<this.tbvTaula.getItems().size();i++){
             e.add(this.tbvTaula.getItems().get(i));
@@ -126,15 +130,15 @@ public class HasieraKud implements Initializable {
     }
 
     public void hasieraketa() throws IOException {
-        List<Txanpona> emaitza = DBHasiera.getInstance().datuBaseaLortu();
-        ObservableList<Txanpona> a = FXCollections.observableArrayList(emaitza);
+        List<TxanponaDB> emaitza = DBHasiera.getInstance().datuBaseaLortu();
+        ObservableList<TxanponaDB> a = FXCollections.observableArrayList(emaitza);
         tbvTaula.setItems(a);
 
-        tvID.setCellValueFactory(new PropertyValueFactory<>("id"));
-        tvTxanpon.setCellValueFactory(new PropertyValueFactory<>("mota"));
-        tvBolumena.setCellValueFactory(new PropertyValueFactory<>("bolumena"));
-        tvZenbat.setCellValueFactory(new PropertyValueFactory<>("balioa"));
+        tvID.setCellValueFactory(new PropertyValueFactory<>("trade_id"));
         tvNoiz.setCellValueFactory(new PropertyValueFactory<>("data"));
+        tvTxanpon.setCellValueFactory(new PropertyValueFactory<>("mota"));
+        tvBolumena.setCellValueFactory(new PropertyValueFactory<>("volume"));
+        tvZenbat.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
 
     @Override

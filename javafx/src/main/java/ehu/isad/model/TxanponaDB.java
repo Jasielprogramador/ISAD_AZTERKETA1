@@ -1,17 +1,19 @@
 package ehu.isad.model;
 
-
-
-
-public class Txanpona {
+public class TxanponaDB {
     private Integer trade_id;
     private Float price;
     private Float volume;
 
-    public Txanpona(Integer trade_id, Float price, Float volume) {
+    private String mota;
+    private String data;
+
+    public TxanponaDB(Integer trade_id, Float price, Float volume, String mota, String data) {
         this.trade_id = trade_id;
         this.price = price;
         this.volume = volume;
+        this.mota = mota;
+        this.data = data;
     }
 
     public Integer getTrade_id() {
@@ -37,5 +39,20 @@ public class Txanpona {
     public void setVolume(Float volume) {
         this.volume = volume;
     }
+
+    public String getMota() {
+        return mota;
+    }
+
+    public void setMota(String mota) {
+        this.mota = mota;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
 }
-        
